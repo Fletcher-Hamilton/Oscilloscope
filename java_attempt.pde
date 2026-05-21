@@ -10,12 +10,12 @@ int oWidth;
 
 void setup() {
   size(2000, 1000);
-  dx = TWO_PI / period;  // period = 200 at default
+  textSize(25);
   oWidth = int(width*.8); // size of display screen (%)
   cSize = width-oWidth;
   yvalues = new float[oWidth];
-  
-  sliderY = height/25;
+  dx = TWO_PI / period;  // period = 200 at default
+  sliderY = height/5;
 }
 
 void draw() {
@@ -34,12 +34,15 @@ void draw() {
   for (int p=0; p<=oWidth; p+=height/precision) line(0, p, oWidth, p);
   
   // Slider for period
-  if (mouseX >= oWidth+cSize/3 && mouseX <= oWidth+cSize*2/3 && mouseY >= )
-  
   fill(255);
   strokeWeight(3);
-  line(oWidth+cSize/2, height/25, oWidth+cSize/2, height/4);
+  line(oWidth+cSize/2, height/10, oWidth+cSize/2, height/3);
   circle(oWidth+cSize/2, sliderY, 15);
+  text("time\n(length)", oWidth+cSize/3, height/10, cSize/3, height/12.5, textAlign(RIGHT));
+  
+  // Logic for slider
+  period = map(sliderY, height/10, height/3, 0, 1000);
+  dx = TWO_PI / period;  // period = 200 at default
 
   // Sine wave
   calcWave();
@@ -60,4 +63,8 @@ void calcWave() {
     yvalues[i] = sin(x) * amplitude;
     x += dx;
   }
+}
+
+void mouseDragged() {
+  if (mouseX >= oWidth+cSize/3 && mouseX <= oWidth+cSize*2/3 && mouseY >= height/10 && mouseY <= height/3) sliderY = mouseY;
 }
