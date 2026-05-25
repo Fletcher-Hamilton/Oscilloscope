@@ -1,25 +1,35 @@
 // Fletcher Hamilton
 
-float period = 200;
 float amplitude = 100;
 float theta = 0;
-float dx, cSize, sliderY;
+float dx, cSize, pSliderY, fSliderY, aSliderY, period, pMax;
 float[] yvalues;
 int precision = 10;
 int oWidth;
+boolean h = false;
+PImage milkyWayBg;
 
 void setup() {
-  size(2000, 1000);
+  fullScreen();
   textSize(25);
-  oWidth = int(width*.8); // size of display screen (%)
-  cSize = width-oWidth;
-  yvalues = new float[oWidth];
+  textAlign(CENTER);
+  oWidth = int(width*.8); // size of display screen (% decimal)
   dx = TWO_PI / period;  // period = 200 at default
-  sliderY = height/5;
+  pSliderY = height/5;
+  fSliderY = height/10;
+  aSliderY = height*3/4;
+  
+  milkyWayBg = loadImage("milkyWay.png");
 }
 
 void draw() {
-  background(0);
+  if (width < displayWidth | height < displayHeight) image(milkyWayBg, 0, 0, displayWidth, displayHeight);
+  
+  cSize = width-oWidth;
+  yvalues = new float[oWidth];
+
+fill(0);
+rect(0, 0, width, height);
 
   // Horizontal centre line (0 V)
   stroke(255);
@@ -31,18 +41,40 @@ void draw() {
 
   // Incremental lines that go up and down vertically
   strokeWeight(.5);
-  for (int p=0; p<=oWidth; p+=height/precision) line(0, p, oWidth, p);
-  
-  // Slider for period
+  for (int p=0; p<=height; p+=height/precision) line(0, p, oWidth, p);
+
+  // General slider setup
   fill(255);
   strokeWeight(3);
-  line(oWidth+cSize/2, height/10, oWidth+cSize/2, height/3);
-  circle(oWidth+cSize/2, sliderY, 15);
-  text("time\n(length)", oWidth+cSize/3, height/10, cSize/3, height/12.5, textAlign(RIGHT));
-  
-  // Logic for slider
-  period = map(sliderY, height/10, height/3, 0, 1000);
+
+  // Slider for broader focus (focus slider)
+  line(oWidth+cSize/4, height/10, oWidth+cSize/4, height/3);
+  circle(oWidth+cSize/4, fSliderY, 15);
+
+  // Logic for focus slider
+  pMax = map(fSliderY, height/10, height/3, 1, 100000);
+
+  // Slider for period (precision slider)
+  line(oWidth+cSize*3/4, height/10, oWidth+cSize*3/4, height/3);
+  circle(oWidth+cSize*3/4, pSliderY, 15);
+
+  // Logic for precision slider
+  period = map(pSliderY, height/10, height/3, 2, pMax);
   dx = TWO_PI / period;  // period = 200 at default
+
+  // Slider for amplitude (Amp slider)
+  line(oWidth+cSize/4, height*2/3, oWidth+cSize/4, height*9/10);
+  circle(oWidth+cSize/4, aSliderY, 15);
+  
+  // Logic for amplitude slider
+  amplitude = map(aSliderY, height*2/3, height*9/10, 1, 1000);
+  
+
+  // Help text
+  if (h==true) {
+    text("time^10\n(focus)", oWidth+cSize/12, height/25, cSize/3, height/12.5);
+    text("time\n(length)", oWidth+cSize*7/12, height/25, cSize/3, height/12.5);
+  }
 
   // Sine wave
   calcWave();
@@ -66,5 +98,20 @@ void calcWave() {
 }
 
 void mouseDragged() {
-  if (mouseX >= oWidth+cSize/3 && mouseX <= oWidth+cSize*2/3 && mouseY >= height/10 && mouseY <= height/3) sliderY = mouseY;
+  // UI slider
+  if (mouseX >= oWidth-width/75 && mouseX <= oWidth+width/75 && mouseY >= 0 && mouseY <= height) oWidth = int(mouseX);
+  // Precision slider
+  else if (mouseX >= oWidth+cSize*2/3 && mouseX <= oWidth+cSize*5/6 && mouseY >= height/10 && mouseY <= height/3) pSliderY = mouseY;
+  // Focus slider
+  else if (mouseX >= oWidth+cSize/6 && mouseX <= oWidth+cSize/3 && mouseY >= height/10 && mouseY <= height/3) fSliderY = mouseY;
+  // Amp slider
+  else if (mouseX >= oWidth+cSize/6 && mouseX <= oWidth+cSize/3 && mouseY >= height*2/3 && mouseY <= height*9/10) aSliderY = mouseY;
+  // Window width slider
+  if (mouseX >= width/1.01 && mouseX <= width*1.01) width = mouseX;
+  // Window height slider
+  if (mouseY >= height/1.01 && mouseY <= width*1.01) height = mouseY;
+}
+
+void keyPressed() {
+  if (key == 'h' || key == 'H') h = !h;
 }
