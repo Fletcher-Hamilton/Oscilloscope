@@ -9,6 +9,7 @@ int maxFocus = 1000;
 int oWidth;
 boolean h = false;
 PImage milkyWayBg;
+char waveType;
 
 void setup() {
   fullScreen();
@@ -21,6 +22,8 @@ void setup() {
   fSliderY = height/5;
   aSliderY = height*3/4;
   pSliderY = height/5;
+  
+  waveType = 'i'; // Second letter in the name (since sine, square, and sawtooth would all be the same 's')
 
   milkyWayBg = loadImage("milkyWay.png");
 }
@@ -78,8 +81,23 @@ void draw() {
   circle(oWidth+cSize/4, aSliderY, 15);
 
   // Logic for amplitude slider
-  amplitude = map(aSliderY, height*2/3, height*9/10, 1, 1000);
-
+  amplitude = map(aSliderY, height*2/3, height*9/10, 0.0001, 1000);
+  
+  
+  // General waveType button setup
+  noStroke();
+  
+  // Sine wave button
+  fill(255, 0, 0); // red
+  circle(oWidth+cSize/4, height/2, cSize/4);
+  
+  // Square wave button
+  fill(0, 255, 0); // green
+  circle(oWidth+cSize/2, height/2, cSize/4);
+  
+  // Sawtooth wave
+  fill(0, 0, 255); // blue
+  circle(oWidth+cSize*3/4, height/2, cSize/4);
 
   // Help text
   if (h==true) {
@@ -105,7 +123,10 @@ void calcWave() {
   theta += 0.02;
   float x = theta;
   for (int i = 0; i < yvalues.length; i++) {
-    yvalues[i] = sin(x) * amplitude;
+    if (waveType == 'i') yvalues[i] = sin(x) * amplitude;
+                                          // condition  // if true  // if false //
+    else if (waveType == 'q') yvalues[i] = (sin(x) > 0) ? amplitude : -amplitude;
+    else if (waveType == 'a') yvalues[i] = ((x % TWO_PI) / PI - 1) * amplitude;
     x += dx;
   }
 }
@@ -129,4 +150,13 @@ void mouseDragged() {
 
 void keyPressed() {
   if (key == 'h' || key == 'H') h = !h;
+}
+
+void mouseReleased() {
+  // Sine wave
+  if (dist(oWidth+cSize/4, height/2, mouseX, mouseY) <= cSize/8) waveType = 'i';
+  // Square wave
+  else if (dist(oWidth+cSize/2, height/2, mouseX, mouseY) <= cSize/8) waveType = 'q';
+  // Sawtooth wave
+  else if (dist(oWidth+cSize*3/4, height/2, mouseX, mouseY) <= cSize/8) waveType = 'a';
 }
