@@ -2,6 +2,7 @@
 
 float amplitude = 100;
 float theta = 0;
+float pulseTime = 0.5; // 0 -> 1 (% of time pulsing) // this means 0.5 = square wave
 float dx, cSize, sSliderY, fSliderY, aSliderY, pSliderY, period, sPeriod, pMax;
 float[] yvalues;
 int gridSize = 10;
@@ -23,7 +24,7 @@ void setup() {
   aSliderY = height*3/4;
   pSliderY = height/5;
   
-  waveType = 'i'; // Second letter in the name (since sine, square, and sawtooth would all be the same 's')
+  waveType = 'u'; // Second letter in the name (since sine, square, and sawtooth would all be the same 's')
 
   milkyWayBg = loadImage("milkyWay.png");
 }
@@ -66,7 +67,7 @@ void draw() {
   circle(oWidth+cSize/2, pSliderY, 15);
   
   // Logic for precision slider
-  period = map(pSliderY, height/10, height/3, 1, pMax*10);
+  period = map(pSliderY, height/10, height/3, pMax-200, pMax*10);
 
   // Slider for small change in period (Super precision slider)
   line(oWidth+cSize*3/4, height/10, oWidth+cSize*3/4, height/3);
@@ -74,7 +75,9 @@ void draw() {
 
   // Logic for super precision slider
   sPeriod = map(sSliderY, height/10, height/3, pMax-200, pMax);
-  dx = TWO_PI / (period*sPeriod);  // period = 200 at default
+  dx = TWO_PI / (period*sPeriod);
+  
+  //println("sPeroid:" + sPeroid,  
 
   // Slider for amplitude (Amp slider)
   line(oWidth+cSize/4, height*2/3, oWidth+cSize/4, height*9/10);
@@ -98,6 +101,10 @@ void draw() {
   // Sawtooth wave
   fill(0, 0, 255); // blue
   circle(oWidth+cSize*3/4, height/2, cSize/4);
+  
+  // Triangle wave
+  fill(255, 255, 0); // yellow
+  circle(oWidth+cSize/4, height*3/5, cSize/4);
 
   // Help text
   if (h==true) {
@@ -122,11 +129,14 @@ void draw() {
 void calcWave() {
   theta += 0.02;
   float x = theta;
+  float phase = (x % TWO_PI) / TWO_PI;
   for (int i = 0; i < yvalues.length; i++) {
     if (waveType == 'i') yvalues[i] = sin(x) * amplitude;
                                           // condition  // if true  // if false //
     else if (waveType == 'q') yvalues[i] = (sin(x) > 0) ? amplitude : -amplitude;
-    else if (waveType == 'a') yvalues[i] = ((x % TWO_PI) / PI - 1) * amplitude;
+    else if (waveType == 'a') yvalues[i] = ((x % TWO_PI) / PI - 1)  * amplitude;
+    else if (waveType == 'r') yvalues[i] = (asin(sin(x)) / HALF_PI) * amplitude;
+    else if (waveType == 'u') yvalues[i] = (phase < pulseTime) ? amplitude : -amplitude;
     x += dx;
   }
 }
@@ -159,4 +169,6 @@ void mouseReleased() {
   else if (dist(oWidth+cSize/2, height/2, mouseX, mouseY) <= cSize/8) waveType = 'q';
   // Sawtooth wave
   else if (dist(oWidth+cSize*3/4, height/2, mouseX, mouseY) <= cSize/8) waveType = 'a';
+  // Triangle wave
+  else if (dist(oWidth+cSize/4, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'r';
 }
