@@ -98,13 +98,17 @@ void draw() {
   fill(0, 255, 0); // green
   circle(oWidth+cSize/2, height/2, cSize/4);
   
-  // Sawtooth wave
+  // Sawtooth wave button
   fill(0, 0, 255); // blue
   circle(oWidth+cSize*3/4, height/2, cSize/4);
   
-  // Triangle wave
+  // Triangle wave button
   fill(255, 255, 0); // yellow
   circle(oWidth+cSize/4, height*3/5, cSize/4);
+  
+  // Pulse wave button
+  fill(0, 255, 255); // cyan
+  circle(oWidth+cSize/2, height*3/5, cSize/4);
 
   // Help text
   if (h==true) {
@@ -171,4 +175,6 @@ void mouseReleased() {
   else if (dist(oWidth+cSize*3/4, height/2, mouseX, mouseY) <= cSize/8) waveType = 'a';
   // Triangle wave
   else if (dist(oWidth+cSize/4, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'r';
+  // Pulse wave
+  else if ()
 }
