@@ -176,5 +176,5 @@ void mouseReleased() {
   // Triangle wave
   else if (dist(oWidth+cSize/4, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'r';
   // Pulse wave
-  else if ()
+  else if (dist(oWidth+cSize/2, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'u';
 }
