@@ -16,6 +16,7 @@ void setup() {
   fullScreen();
   textSize(25);
   textAlign(CENTER);
+
   
   oWidth = int(width*.8); // size of display screen (% decimal)
   dx = TWO_PI / period;  // period = 200 at default
@@ -140,7 +141,10 @@ void calcWave() {
     else if (waveType == 'q') yvalues[i] = (sin(x) > 0) ? amplitude : -amplitude;
     else if (waveType == 'a') yvalues[i] = ((x % TWO_PI) / PI - 1)  * amplitude;
     else if (waveType == 'r') yvalues[i] = (asin(sin(x)) / HALF_PI) * amplitude;
-    else if (waveType == 'u') yvalues[i] = (phase < pulseTime) ? amplitude : -amplitude;
+    else if (waveType == 'u') {
+      yvalues[i] = (phase < pulseTime) ? amplitude : -amplitude;
+      println(yvalues[0], yvalues[i]);
+    }
     x += dx;
   }
 }
