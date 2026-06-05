@@ -143,7 +143,8 @@ void calcWave() {
     else if (waveType == 'r') yvalues[i] = (asin(sin(x)) / HALF_PI) * amplitude;
     else if (waveType == 'u') {
       yvalues[i] = (phase < pulseTime) ? amplitude : -amplitude;
-      println(yvalues[0], yvalues[1], yvalues[i]);
+      //println(yvalues[0], yvalues[1], yvalues[i]);
+      println(phase, pulseTime);
     }
     x += dx;
   }
