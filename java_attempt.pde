@@ -134,8 +134,9 @@ void draw() {
 void calcWave() {
   theta += 0.02;
   float x = theta;
-  float phase = (x % TWO_PI) / TWO_PI;
   for (int i = 0; i < yvalues.length; i++) {
+    float phase = (x % TWO_PI) / TWO_PI;
+
     if (waveType == 'i') yvalues[i] = sin(x) * amplitude;
                                           // condition  // if true  // if false //
     else if (waveType == 'q') yvalues[i] = (sin(x) > 0) ? amplitude : -amplitude;
