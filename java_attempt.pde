@@ -2,11 +2,12 @@
 
 float amplitude = 100;
 float theta = 0;
-float pulseTime = 0.5; // 0 -> 1 (% of time pulsing) // this means 0.5 = square wave
-float dx, cSize, sSliderY, fSliderY, aSliderY, pSliderY, period, sPeriod, pMax;
+float pulseTime = 0.8; // 0 -> 1 (% of time pulsing) // this means 0.5 = square wave
+float dx, cSize, sSliderY, fSliderY, aSliderY, pSliderY, cSliderY, period, sPeriod, pMax;
 float[] yvalues;
 int gridSize = 10;
 int maxFocus = 1000;
+int chunk = 10;
 int oWidth;
 boolean h = false;
 PImage milkyWayBg;
@@ -24,11 +25,13 @@ void setup() {
   fSliderY = height/5;
   aSliderY = height*3/4;
   pSliderY = height/5;
+  cSliderY = height/5;
   
-  waveType = 'u'; // Second letter in the name (since sine, square, and sawtooth would all be the same 's')
+  waveType = 'o'; // Second letter in the name (since sine, square, and sawtooth would all be the same 's')
 
   milkyWayBg = loadImage("milkyWay.png");
 }
+
 
 void draw() {
   if (width < displayWidth | height < displayHeight) image(milkyWayBg, 0, 0, displayWidth, displayHeight);
@@ -77,8 +80,6 @@ void draw() {
   // Logic for super precision slider
   sPeriod = map(sSliderY, height/10, height/3, pMax-200, pMax);
   dx = TWO_PI / (period*sPeriod);
-  
-  //println("sPeroid:" + sPeroid,  
 
   // Slider for amplitude (Amp slider)
   line(oWidth+cSize/4, height*2/3, oWidth+cSize/4, height*9/10);
@@ -87,6 +88,9 @@ void draw() {
   // Logic for amplitude slider
   amplitude = map(aSliderY, height*2/3, height*9/10, 0.0001, 1000);
   
+  // Slider for multiple uses (Custom slider)
+  line(oWidth+cSize*3/4, height*2/3, oWidth+cSize*3/4, height*9/10);
+  circle(oWidth+cSize*3/4, cSliderY, 15);
   
   // General waveType button setup
   noStroke();
@@ -110,9 +114,14 @@ void draw() {
   // Pulse wave button
   fill(0, 255, 255); // cyan
   circle(oWidth+cSize/2, height*3/5, cSize/4);
+  
+  // Modified sine wave button
+  fill(255, 0, 255); // magenta
+  circle(oWidth+cSize*3/4, height*3/5, cSize/4);
 
   // Help text
   if (h==true) {
+    fill(255);
     text("time^10\n(focus)", oWidth+cSize/12, height/25, cSize/3, height/12.5);
     text("timex10\n(general)", oWidth+cSize*4/12, height/25, cSize/3, height/12.5);
     text("time\n(length)", oWidth+cSize*7/12, height/25, cSize/3, height/12.5);
@@ -135,8 +144,8 @@ void calcWave() {
   theta += 0.02;
   float x = theta;
   for (int i = 0; i < yvalues.length; i++) {
-    float phase = (x % TWO_PI) / TWO_PI;
-
+      float phase = (x % TWO_PI) / TWO_PI;
+    
     if (waveType == 'i') yvalues[i] = sin(x) * amplitude;
                                           // condition  // if true  // if false //
     else if (waveType == 'q') yvalues[i] = (sin(x) > 0) ? amplitude : -amplitude;
@@ -147,6 +156,7 @@ void calcWave() {
       //println(yvalues[0], yvalues[1], yvalues[i]);
       println(phase, pulseTime);
     }
+    else if (waveType == 'o') yvalues[i] = int(sin(x)/chunk * amplitude)*chunk;
     x += dx;
   }
 }
@@ -162,6 +172,8 @@ void mouseDragged() {
   else if (mouseX >= oWidth+cSize/6 && mouseX <= oWidth+cSize/3 && mouseY >= height/10 && mouseY <= height/3) fSliderY = mouseY;
   // Amp slider
   else if (mouseX >= oWidth+cSize/6 && mouseX <= oWidth+cSize/3 && mouseY >= height*2/3 && mouseY <= height*9/10) aSliderY = mouseY;
+  // Custom slider
+  else if (mouseX >= oWidth+cSize*5/6 && mouseX <= oWidth+cSize*2/3 && mouseY >= height*2/3 && mouseY <= height*9/10) cSliderY = mouseY;
   // Window width slider
   if (mouseX >= width/1.01 && mouseX <= width*1.01) width = mouseX;
   // Window height slider
@@ -183,4 +195,6 @@ void mouseReleased() {
   else if (dist(oWidth+cSize/4, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'r';
   // Pulse wave
   else if (dist(oWidth+cSize/2, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'u';
+  // Modified sine wave
+  else if (dist(oWidth+cSize*3/4, height*3/5, mouseX, mouseY) <= cSize/8) waveType = 'o';
 }
